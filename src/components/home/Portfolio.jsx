@@ -59,7 +59,7 @@ export default function Portfolio() {
                 {sliderItems.map((company, i) => (
                 <Card
                   key={`${company.name}-${i}`}
-                  className="w-[260px] sm:w-[280px] md:w-[300px] lg:w-[320px] shrink-0 rounded-sm p-8 text-center flex flex-col items-center gap-4 border border-[#2A2A2A] bg-[#171717] hover:bg-[#1F1F1F] hover:border-[#D4AF37]/40 hover:shadow-2xl hover:shadow-[#D4AF37]/10 transition-all duration-500 group"
+                  className="w-65 sm:w-70 md:w-75 lg:w-[320px] shrink-0 rounded-sm p-8 text-center flex flex-col items-center gap-4 border border-[#2A2A2A] bg-[#171717] hover:bg-[#1F1F1F] hover:border-[#D4AF37]/40 hover:shadow-2xl hover:shadow-[#D4AF37]/10 transition-all duration-500 group"
                 >
                 <div className="p-4 rounded-full bg-[#202020] border border-[#2F2F2F] group-hover:scale-110 group-hover:border-[#D4AF37]/40 transition-all duration-500">
                   {company.icon}
