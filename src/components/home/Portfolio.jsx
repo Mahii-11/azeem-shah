@@ -7,39 +7,50 @@ import {
   Hotel 
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import { getPortfolioData } from "../../services/api";
+import PortfolioSkeleton from "../../loading/PortfolioSkeleton";
 
 export default function Portfolio() {
-  const companies = [
-    {
-      name: "LuxuryStay Hotels",
-      icon: <Hotel className="w-8 h-8 text-[#D4AF37]" />,
-      desc: "Premium accommodation solutions across major global destinations.",
-    },
-    {
-      name: "Elite Resorts",
-      icon: <Building2 className="w-8 h-8 text-[#D4AF37]" />,
-      desc: "Exclusive resort management and development services.",
-    },
-    {
-      name: "Zenith Hospitality",
-      icon: <Building className="w-8 h-8 text-[#D4AF37]" />,
-      desc: "Comprehensive hospitality consulting and strategic planning.",
-    },
-    {
-      name: "Gourmet Catering",
-      icon: <Utensils className="w-8 h-8 text-[#D4AF37]" />,
-      desc: "High-end culinary experiences for luxury events and venues.",
-    },
-    {
-      name: "Spa Essence",
-      icon: <Leaf className="w-8 h-8 text-[#D4AF37]" />,
-      desc: "Holistic wellness and luxury spa management.",
-    },
-  ];
+  const [portfolioData, setPortfolioData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const sliderItems = [...companies, ...companies];
+ useEffect(() => {
+  const fetchPortfolioData = async () => {
+    try {
+      setLoading(true);
+      const data = await getPortfolioData();
+      console.log(data);
+      setPortfolioData(data || []);
+    } catch (error) {
+      console.error("Error fetching portfolio data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchPortfolioData();
+}, []);
 
-  return (
+const companies = portfolioData;
+const sliderItems = companies.length ? [...companies, ...companies] : [];
+  
+
+
+
+const iconMap = {
+  Hotel: Hotel,
+  Building2: Building2,
+  Building: Building,
+  Utensils: Utensils,
+  Leaf: Leaf,
+};
+
+
+
+  if (loading) return <PortfolioSkeleton />;
+
+
+ return (
      <section id="companies" className="py-24 bg-[#111] relative border-y border-white/5 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-black via-transparent to-black pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10 space-y-16 text-center">
@@ -56,21 +67,29 @@ export default function Portfolio() {
 
             <div className="overflow-hidden">
               <div className="flex gap-5 w-max portfolio-marquee py-2">
-                {sliderItems.map((company, i) => (
-                <Card
-                  key={`${company.name}-${i}`}
-                  className="w-65 sm:w-70 md:w-75 lg:w-[320px] shrink-0 rounded-sm p-8 text-center flex flex-col items-center gap-4 border border-[#2A2A2A] bg-[#171717] hover:bg-[#1F1F1F] hover:border-[#D4AF37]/40 hover:shadow-2xl hover:shadow-[#D4AF37]/10 transition-all duration-500 group"
-                >
-                <div className="p-4 rounded-full bg-[#202020] border border-[#2F2F2F] group-hover:scale-110 group-hover:border-[#D4AF37]/40 transition-all duration-500">
-                  {company.icon}
-                </div>
-                <h3 className="text-[#F2EAD3] font-serif text-lg font-semibold">{company.name}</h3>
-                <p className="text-xs text-[#C8C8C8]/80 font-light flex-1">{company.desc}</p>
-                <Button variant="outline" className="w-full mt-4 rounded-none border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black text-xs tracking-widest uppercase">
-                  Visit Website
-                </Button>
-              </Card>
-            ))}
+                {sliderItems.map((company, i) => {
+                  const Icon = iconMap[company.icon || "Building"];
+
+
+                  return (
+                    <Card
+                    key={`${company.title}-${i}`}
+                    className="w-65 sm:w-70 md:w-75 lg:w-[320px] shrink-0 rounded-sm p-8 text-center flex flex-col items-center gap-4 border border-[#2A2A2A] bg-[#171717] hover:bg-[#1F1F1F] hover:border-[#D4AF37]/40 hover:shadow-2xl hover:shadow-[#D4AF37]/10 transition-all duration-500 group"
+                  >
+                  <div className="p-4 rounded-full bg-[#202020] border border-[#2F2F2F] group-hover:scale-110 group-hover:border-[#D4AF37]/40 transition-all duration-500">
+                  <Icon className="w-8 h-8 text-[#D4AF37]" />
+                  </div>
+                  <h3 className="text-[#F2EAD3] font-serif text-lg font-semibold">{company.title}</h3>
+                  <p className="text-xs text-[#C8C8C8]/80 font-light flex-1">{company.short_description}</p>
+                  <Button asChild variant="outline" className="w-full mt-4 rounded-none border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black text-xs tracking-widest uppercase">
+                    <a href={company.websiteUrl || "#"} target="_blank" rel="noreferrer">
+                      Visit Website
+                    </a>
+                  </Button>
+                </Card>
+                  )
+               
+})}
               </div>
             </div>
           </div>

@@ -1,4 +1,34 @@
+import { useEffect, useState } from "react"
+import { getAwardsAchievements } from "../../services/api";
+import  AwardsAchievementsSkeleton  from "../../loading/AwardsAchievementsSkeleton"
+
 export default function AwardsAchievements() {
+  const [awards, setAwards] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchAwardsAchievements = async () => {
+      try {
+        setLoading(true);
+        const data = await getAwardsAchievements();
+        setAwards(data || []);
+      } catch (error) {
+        console.error("Error fetching Award and Achievements data", error);
+      } finally {
+        setLoading(false)
+      }
+    };
+    fetchAwardsAchievements();
+  }, [])
+
+  if (loading) return <AwardsAchievementsSkeleton />
+
+
+
+
+
+
   return (
     <section className="py-12 bg-[#050505]">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-12">
@@ -11,18 +41,14 @@ export default function AwardsAchievements() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-2">
-              <div className="text-2xl font-serif text-[#D4AF37]">2018</div>
-              <div className="text-sm text-white/60 uppercase tracking-wider">Luxury Hotel Award</div>
+            {awards.map((item, i) => (
+            <div 
+            key={`${item.title}-${i}`}
+            className="space-y-2">
+               <div className="text-2xl font-serif text-[#D4AF37]">{item.year}</div>
+               <div className="text-sm text-white/60 uppercase tracking-wider">{item.title}</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-2xl font-serif text-[#D4AF37]">2019</div>
-              <div className="text-sm text-white/60 uppercase tracking-wider">Hospitality Leadership Award</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-2xl font-serif text-[#D4AF37]">2021</div>
-              <div className="text-sm text-white/60 uppercase tracking-wider">Featured in Travel Magazine</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
