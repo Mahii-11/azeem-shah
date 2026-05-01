@@ -48,6 +48,7 @@ export const getHomeData = () => fetchData("/hero-section-data");
 export const getPortfolioData = () => fetchData("/service-data");
 export const getExpertiseData = () => fetchData("/expertise-data");
 export const getAwardsAchievements = () => fetchData("/award-data");
+export const getReviewData = () => fetchData("/review-data");
 
 
 

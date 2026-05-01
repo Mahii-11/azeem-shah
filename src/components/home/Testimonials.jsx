@@ -2,32 +2,30 @@ import { useEffect, useState } from "react";
 import { Quote, X } from "lucide-react";
 import { Button } from "../ui/button";
 import starsBg from '../../assets/images/stars-bg.png';
+import { getReviewData } from "../../services/api";
+import TestimonialsSkeleton from "../../loading/TestimonialsSkeleton";
 
 export default function Testimonials() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const reviews = [
-    {
-      quote: "Azeem's leadership took our hotel to new heights of success.",
-      name: "James Williams",
-      role: "General Manager, London",
-    },
-    {
-      quote: "From operations to brand positioning, his strategy delivered measurable growth.",
-      name: "Sophia Carter",
-      role: "Regional Director, Dubai",
-    },
-    {
-      quote: "He transformed our guest experience standards with precision and consistency.",
-      name: "Daniel Brown",
-      role: "Hotel Owner, Singapore",
-    },
-    {
-      quote: "A rare hospitality leader who balances luxury vision with practical execution.",
-      name: "Aisha Rahman",
-      role: "Hospitality Consultant, Doha",
-    },
-  ];
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const data = await getReviewData();
+        setReviews(data || []);
+      } catch (error) {
+        console.error("Error fetching review data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchReviews();
+  }, [])
+
+ 
 
   const sliderReviews = [...reviews, ...reviews];
   useEffect(() => {
@@ -39,6 +37,14 @@ export default function Testimonials() {
       document.body.style.overflow = originalOverflow;
     };
   }, [isContactOpen]);
+
+
+  if (loading) return <TestimonialsSkeleton />;
+
+
+
+
+
 
   return (
     <>
