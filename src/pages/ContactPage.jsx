@@ -1,4 +1,5 @@
 import Navbar from "../layout/Navbar";
+import Footer from "../layout/Footer";
 import { Button } from "../components/ui/button";
 
 export default function ContactPage() {
@@ -73,6 +74,7 @@ export default function ContactPage() {
           </form>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

@@ -3,9 +3,11 @@ const BASE_URL = "https://backend.azeemshah.com/api";
 // 🔹 Normalize data (main magic)
 const normalizeData = (res) => {
   if (res?.data?.data) return res.data.data;
+  if (res?.data?.about) return [res.data.about]; 
   if (res?.data) return res.data;
   return res;
 };
+
 
 // 🔹 Handle error nicely
 const handleError = async (res) => {
@@ -49,6 +51,7 @@ export const getPortfolioData = () => fetchData("/service-data");
 export const getExpertiseData = () => fetchData("/expertise-data");
 export const getAwardsAchievements = () => fetchData("/award-data");
 export const getReviewData = () => fetchData("/review-data");
+export const getAboutData = () => fetchData("/about-data");
 
 
 

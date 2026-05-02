@@ -1,6 +1,7 @@
 import AboutSection from "../components/home/AboutSection";
 import HeroSection from "../components/home/HeroSection";
 import Navbar from "../layout/Navbar"
+import Footer from "../layout/Footer";
 import GlobalExperience from "../components/home/GlobalExperience";
 import Portfolio from "../components/home/Portfolio";
 import Expertise from "../components/home/Expertise";
@@ -17,6 +18,7 @@ export default function Home() {
       <Expertise />
       <AwardsAchievements />
       <Testimonials />
+      <Footer />
     </div>
   );
 }

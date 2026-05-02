@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { PlayCircle, Video, Image as ImageIcon, Newspaper, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Video, Image as ImageIcon, Newspaper, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "../layout/Navbar";
+import Footer from "../layout/Footer";
 import { Button } from "../components/ui/button";
 
 const FEATURED_VIDEOS = [
@@ -254,14 +255,7 @@ export default function MediaPage() {
         </div>
       </section>
 
-      <footer className="px-4 sm:px-6 lg:px-10 pb-10">
-        <div className="max-w-6xl mx-auto border-t border-white/10 pt-6 text-center text-xs text-white/50 tracking-[0.14em] uppercase">
-          <p className="inline-flex items-center gap-2">
-            <PlayCircle size={14} className="text-[#D4AF37]" />
-            Curated media portfolio by Azeem Shah
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
