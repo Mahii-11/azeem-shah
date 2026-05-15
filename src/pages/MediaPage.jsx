@@ -5,8 +5,31 @@ import Footer from "../layout/Footer";
 import { Button } from "../components/ui/button";
 import { getFeaturedVideos, getHighlightData, getMediaGallery } from "../services/api";
 
+function getYouTubeVideoId(urlOrEmbed) {
+  if (!urlOrEmbed) return null;
+  const match = urlOrEmbed.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match?.[1] ?? null;
+}
 
+function YouTubeEmbed({ urlOrEmbed, title }) {
+  const videoId = getYouTubeVideoId(urlOrEmbed);
+  if (!videoId) {
+    return <div className="flex h-full w-full items-center justify-center bg-black text-white/50 text-sm">Video unavailable</div>;
+  }
 
+  return (
+    <iframe
+      key={videoId}
+      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
+      title={title}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerPolicy="strict-origin-when-cross-origin"
+      allowFullScreen
+      className="h-full w-full border-0"
+    />
+  );
+}
 
 export default function MediaPage() {
   const [featuredVideos, setFeaturedVideos] = useState([]);
@@ -40,7 +63,7 @@ export default function MediaPage() {
     };
 
     loadHighlight();
-  })
+  }, []);
 
 
 
@@ -65,7 +88,7 @@ export default function MediaPage() {
     }, 5000);
 
     return () => window.clearInterval(interval);
-  }, [isVideoHovered]);
+  }, [isVideoHovered, featuredVideos.length]);
 
   const goToPreviousVideo = () => {
     setActiveVideo((prev) => (prev - 1 + featuredVideos.length) % featuredVideos.length);
@@ -112,12 +135,22 @@ export default function MediaPage() {
                 className="flex transition-transform duration-700 ease-out"
                 style={{ transform: `translateX(-${activeVideo * 100}%)` }}
               >
-                {featuredVideos.map((video) => (
+                {featuredVideos.map((video, index) => (
                    <article key={video.title} className="w-full shrink-0 space-y-4">
-                   <div
-                     className="aspect-video w-full overflow-hidden rounded-sm border border-white/10 [&>iframe]:h-full [&>iframe]:w-full"
-                     dangerouslySetInnerHTML={{ __html: video.url }}
-                   />
+                   <div className="aspect-video w-full overflow-hidden rounded-sm border border-white/10 bg-black">
+                     {index === activeVideo ? (
+                       <YouTubeEmbed urlOrEmbed={video.url} title={video.title} />
+                     ) : (
+                       <div
+                         className="h-full w-full bg-cover bg-center opacity-60"
+                         style={{
+                           backgroundImage: getYouTubeVideoId(video.url)
+                             ? `url(https://img.youtube.com/vi/${getYouTubeVideoId(video.url)}/hqdefault.jpg)`
+                             : undefined,
+                         }}
+                       />
+                     )}
+                   </div>
 
                   <div className="space-y-2">
                     <p className="text-[11px] uppercase tracking-[0.2em] text-[#D4AF37]">
@@ -140,7 +173,7 @@ export default function MediaPage() {
                 type="button"
                 onClick={goToPreviousVideo}
                 aria-label="Previous video"
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 grid place-items-center bg-black/65 border border-white/20 hover:border-[#D4AF37]/70 text-white transition-colors"
+                className="absolute left-3 top-[calc(50%-4rem)] -translate-y-1/2 z-10 h-10 w-10 grid place-items-center bg-black/65 border border-white/20 hover:border-[#D4AF37]/70 text-white transition-colors pointer-events-auto"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -148,7 +181,7 @@ export default function MediaPage() {
                 type="button"
                 onClick={goToNextVideo}
                 aria-label="Next video"
-                className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 grid place-items-center bg-black/65 border border-white/20 hover:border-[#D4AF37]/70 text-white transition-colors"
+                className="absolute right-3 top-[calc(50%-4rem)] -translate-y-1/2 z-10 h-10 w-10 grid place-items-center bg-black/65 border border-white/20 hover:border-[#D4AF37]/70 text-white transition-colors pointer-events-auto"
               >
                 <ChevronRight size={18} />
               </button>
