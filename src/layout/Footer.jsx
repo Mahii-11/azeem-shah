@@ -1,4 +1,6 @@
 import { Facebook, Instagram, Linkedin, Mail, ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getSocialIcon } from "../services/api";
 
 const QUICK_LINKS = [
   { label: "About", href: "/#about" },
@@ -8,13 +10,35 @@ const QUICK_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
-const SOCIAL_LINKS = [
-  { label: "LinkedIn", href: "#", icon: Linkedin },
-  { label: "Instagram", href: "#", icon: Instagram },
-  { label: "Facebook", href: "#", icon: Facebook },
-];
+const iconMap = {
+  LinkedIn: Linkedin,
+  Instagram: Instagram,
+  Facebook: Facebook,
+  Mail: Mail,
+};
 
 export default function Footer() {
+  const [social, setSocial] = useState([]);
+
+  useEffect(() => {
+    const loadSocial = async () => {
+      try {
+        const data = await getSocialIcon();
+        setSocial(data);
+      } catch (error) {
+        console.error("Fetching Error Social Icon", error);
+      }
+    }
+    loadSocial();
+  }, [])
+
+
+
+
+
+
+
+
   return (
     <footer className="relative px-4 sm:px-6 lg:px-10 pt-16 pb-8 border-t border-white/10 bg-linear-to-b from-[#090909] via-black to-black overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
@@ -66,19 +90,29 @@ export default function Footer() {
               contact@azeemshah.com
             </a>
             <div className="flex items-center gap-3">
-              {SOCIAL_LINKS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    aria-label={item.label}
-                    className="h-10 w-10 grid place-items-center border border-white/20 bg-[#101010] text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/60 transition-colors"
-                  >
-                    <Icon size={16} />
-                  </a>
-                );
-              })}
+               {social.map((item) => {
+               const Icon = iconMap[item.platform];
+
+  const href =
+    item.platform === "Mail"
+      ? `mailto:${item.link}`
+      : item.link;
+
+  if (!Icon) return null; // safety check
+
+  return (
+    <a
+      key={item.id || item.label}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={item.label}
+      className="h-10 w-10 grid place-items-center border border-white/20 bg-[#101010] text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/60 transition-colors"
+    >
+      <Icon size={16} />
+    </a>
+  );
+})}
             </div>
           </div>
         </div>
