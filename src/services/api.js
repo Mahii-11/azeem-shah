@@ -52,6 +52,29 @@ export const getExpertiseData = () => fetchData("/expertise-data");
 export const getAwardsAchievements = () => fetchData("/award-data");
 export const getReviewData = () => fetchData("/review-data");
 export const getAboutData = () => fetchData("/about-data");
+export const getFeaturedVideos = () => fetchData("/featured-videos-data");
+export const getMediaGallery = () => fetchData("/media-gallery-data");
+export const getHighlightData = () => fetchData("/press-highlight-data");
+export const getSocialIcon = () => fetchData("/social-data");
 
 
 
+
+
+
+//post request for contact form
+
+export const submitContactForm = async (formData) => {
+  const response = await fetch(`${BASE_URL}/store-contact`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data?.message || "Something went wrong");
+  }
+
+  return data;
+};

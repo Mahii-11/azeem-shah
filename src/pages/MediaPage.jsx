@@ -3,87 +3,76 @@ import { Video, Image as ImageIcon, Newspaper, ArrowUpRight, ChevronLeft, Chevro
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import { Button } from "../components/ui/button";
+import { getFeaturedVideos, getHighlightData, getMediaGallery } from "../services/api";
 
-const FEATURED_VIDEOS = [
-  {
-    title: "Luxury Hospitality Leadership Talk",
-    label: "Featured Interview",
-    description: "Azeem Shah discusses premium guest experience strategy and operational excellence in modern hospitality.",
-    embedUrl: "https://www.youtube.com/embed/rdQfeH8Ikso?start=173",
-  },
-  {
-    title: "Global Brand Growth Insights",
-    label: "Conference Keynote",
-    description: "A strategic framework for scaling 5-star hospitality brands across diverse global markets.",
-    embedUrl: "https://www.youtube.com/embed/xLTCivIB4kU",
-  },
-];
 
-const MEDIA_GALLERY = [
-  {
-    title: "Leadership Session in Dubai",
-    category: "Event Coverage",
-    image:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    title: "Luxury Property Opening",
-    category: "Project Milestone",
-    image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    title: "Executive Strategy Briefing",
-    category: "Boardroom",
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    title: "Hospitality Summit Appearance",
-    category: "Public Speaking",
-    image:
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1400&q=80",
-  },
-];
 
-const PRESS_HIGHLIGHTS = [
-  {
-    source: "Luxury Travel Weekly",
-    headline: "How Azeem Shah is Redefining High-End Guest Experience Standards",
-    type: "Editorial",
-  },
-  {
-    source: "Global Hotel Review",
-    headline: "Operational Systems That Elevated Multi-Property Revenue Performance",
-    type: "Industry Feature",
-  },
-  {
-    source: "Hospitality Leaders Podcast",
-    headline: "Vision, Culture, and Strategy in 5-Star Hotel Management",
-    type: "Podcast",
-  },
-];
 
 export default function MediaPage() {
+  const [featuredVideos, setFeaturedVideos] = useState([]);
   const [activeVideo, setActiveVideo] = useState(0);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
+  const [gallery, setGallery] = useState([]);
+  const [highlightData, setHighlightData] = useState([]);
 
   useEffect(() => {
-    if (isVideoHovered || FEATURED_VIDEOS.length <= 1) return undefined;
+    const loadMediaGallery = async () => {
+      try {
+        const data = await getMediaGallery();
+        setGallery(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    loadMediaGallery();
+  }, []);
+
+
+  useEffect(() => {
+    const loadHighlight = async () => {
+      try {
+        const data = await getHighlightData();
+        setHighlightData(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    loadHighlight();
+  })
+
+
+
+  useEffect(() => {
+  const loadFeaturedVideos = async () => {
+    try {
+      const data = await getFeaturedVideos();
+      setFeaturedVideos(data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  loadFeaturedVideos();
+}, []);
+
+  useEffect(() => {
+    if (isVideoHovered || featuredVideos.length <= 1) return undefined;
 
     const interval = window.setInterval(() => {
-      setActiveVideo((prev) => (prev + 1) % FEATURED_VIDEOS.length);
+      setActiveVideo((prev) => (prev + 1) % featuredVideos.length);
     }, 5000);
 
     return () => window.clearInterval(interval);
   }, [isVideoHovered]);
 
   const goToPreviousVideo = () => {
-    setActiveVideo((prev) => (prev - 1 + FEATURED_VIDEOS.length) % FEATURED_VIDEOS.length);
+    setActiveVideo((prev) => (prev - 1 + featuredVideos.length) % featuredVideos.length);
   };
 
   const goToNextVideo = () => {
-    setActiveVideo((prev) => (prev + 1) % FEATURED_VIDEOS.length);
+    setActiveVideo((prev) => (prev + 1) % featuredVideos.length);
   };
 
   return (
@@ -123,25 +112,27 @@ export default function MediaPage() {
                 className="flex transition-transform duration-700 ease-out"
                 style={{ transform: `translateX(-${activeVideo * 100}%)` }}
               >
-                {FEATURED_VIDEOS.map((video) => (
-                  <article key={video.title} className="w-full shrink-0 space-y-4">
-                    <div className="aspect-video w-full overflow-hidden rounded-sm border border-white/10">
-                      <iframe
-                        className="h-full w-full"
-                        src={video.embedUrl}
-                        title={video.title}
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-[#D4AF37]">{video.label}</p>
-                      <h3 className="text-xl font-serif text-[#F2EAD3]">{video.title}</h3>
-                      <p className="text-white/70 text-sm leading-relaxed">{video.description}</p>
-                    </div>
-                  </article>
+                {featuredVideos.map((video) => (
+                   <article key={video.title} className="w-full shrink-0 space-y-4">
+                   <div
+                     className="aspect-video w-full overflow-hidden rounded-sm border border-white/10 [&>iframe]:h-full [&>iframe]:w-full"
+                     dangerouslySetInnerHTML={{ __html: video.url }}
+                   />
+
+                  <div className="space-y-2">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-[#D4AF37]">
+                     {video.label}
+                    </p>
+
+                  <h3 className="text-xl font-serif text-[#F2EAD3]">
+                 {video.title}
+                    </h3>
+
+                   <p className="text-white/70 text-sm leading-relaxed">
+                    {video.description}
+                  </p>
+                 </div>
+                 </article>
                 ))}
               </div>
 
@@ -164,7 +155,7 @@ export default function MediaPage() {
             </div>
 
             <div className="flex items-center justify-center gap-2">
-              {FEATURED_VIDEOS.map((video, index) => (
+              {featuredVideos.map((video, index) => (
                 <button
                   key={video.title}
                   type="button"
@@ -192,7 +183,7 @@ export default function MediaPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {MEDIA_GALLERY.map((item) => (
+            {gallery.map((item) => (
               <article
                 key={item.title}
                 className="group relative overflow-hidden rounded-sm border border-[#2A2A2A] bg-[#111]"
@@ -221,7 +212,7 @@ export default function MediaPage() {
               <h2 className="text-2xl font-serif text-[#F2EAD3]">Press Highlights</h2>
             </div>
             <div className="space-y-4">
-              {PRESS_HIGHLIGHTS.map((item) => (
+              {highlightData.map((item) => (
                 <article key={item.headline} className="border border-white/10 rounded-sm p-4 bg-black/30">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-[#D4AF37]">{item.type}</p>
                   <h3 className="text-base sm:text-lg text-white/90 mt-1">{item.headline}</h3>
